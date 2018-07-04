@@ -15,8 +15,8 @@ __FIltering and selecting Data__
      
      Data Slicing 
      
-    __DataFrame Object__
-     * contains rows and Columns
+   __DataFrame Object__
+   * contains rows and Columns
      
                               Column1  Column2 Column3 
                         row1     64       85       49       
