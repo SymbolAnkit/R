@@ -1,6 +1,6 @@
    ## Data Munging
 
-__Pandas__*Provides fast data cleaning, prepration and analysis and is easy to use for data visualization and machine learning.*
+__Pandas__ *provides fast data cleaning, prepration and analysis and is easy to use for data visualization and machine learning.*
 
 __FIltering and selecting Data__
 
