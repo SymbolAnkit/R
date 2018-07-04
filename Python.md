@@ -8,11 +8,11 @@
     __DataFrame Object__
      * contains rows and Columns
      
-                           Column1  Column2 Column3 
-                        row1
-                        row2
-                        row3
-                        row4
+                              Column1  Column2 Column3 
+                        row1     64       85       49       
+                        row2     92       45       72
+                        row3     28       38       57
+                        row4     72       66       27
 
 
 
