@@ -8,8 +8,7 @@ __FIltering and selecting Data__
       import pandas as pd
       from pandas import series,DataFrame
       
-   __Indexing in Pandas__
-     * *An index is a list of integers or labels we use to uniquely identify rows or columns.*
+   __Indexing in Pandas__* *An index is a list of integers or labels we use to uniquely identify rows or columns.*
      
      Plain Indexing
      
