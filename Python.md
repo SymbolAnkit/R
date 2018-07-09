@@ -32,7 +32,36 @@ __FIltering and selecting Data__
            
           * *Ideal for visually spotting outliers and trends in data.*
 
-
+           #### Histigram and scatterplot  
+            
+            import numpy as np 
+            import pandas as pd
+            from pandas import Series , DataFrame
+            
+            from pandas.tools.plotting import scatter_matrix
+            
+            import matplotlib.pyplot as plt
+            from pylab import rcParams
+            import seaborn as sb
+            
+            %matplotlib inline
+            rcParams['figure.figsize'] = 5,4
+            sb.set_style['whitegrid']
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
 
 
