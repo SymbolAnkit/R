@@ -28,8 +28,9 @@ __FIltering and selecting Data__
 
 
            ### Scatter Plot
-           *Useful for exploring interrelations or dependencies between two diffrent variables.
-           *Ideal for visually spotting outliers and trends in data.
+          * *Useful for exploring interrelations or dependencies between two diffrent variables.*
+           
+          * *Ideal for visually spotting outliers and trends in data.*
 
 
 
