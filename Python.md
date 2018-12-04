@@ -49,6 +49,9 @@ __FIltering and selecting Data__
             sb.set_style['whitegrid']
             
             
+            https://www.machinelearningplus.com/plots/top-50-matplotlib-visualizations-the-master-plots-python/?utm_campaign=shareaholic&utm_medium=facebook&utm_source=socialnetwork
+            
+            
             
             
             
