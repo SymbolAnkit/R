@@ -23,3 +23,14 @@
     plot(fit)-	plot decision tree
     
     text(fit)-	label the decision tree plot
+    
+  ### Prune
+  
+Prune back the tree to avoid overfitting the data. Typically, you will want to select a tree size that minimizes the cross-validated error, the xerror column printed by printcp( )
+
+    prune(fit, cp= )
+    
+    fit$cptable[which.min(fit$cptable[,"xerror"]),"CP"]
+    
+    
+    
