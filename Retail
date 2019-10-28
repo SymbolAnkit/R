@@ -1,0 +1,147 @@
+setwd("C:\\Users\\850039370\\Desktop\\New folder\\Retail")
+library(dummies)
+rwdata <- read.csv("SalesKaggle3.csv", header = T)
+str(rwdata)
+colnames(rwdata) <- gsub("[[:punct:]]","_",colnames(rwdata))
+
+rwdata$Order <- NULL
+
+activedata <- subset(rwdata,File_Type == "Active" )
+histdata <- subset(rwdata,File_Type == "Historical")
+
+length(unique(activedata$SKU_number))
+length(unique(histdata$SKU_number))
+
+table(histdata$MarketingType,histdata$SoldFlag)
+
+barplot(table(histdata$MarketingType,histdata$SoldFlag))
+
+head(histdata,2)
+head(activedata,2)
+
+### working on prediction of Sold flag 
+
+sapply(histdata, function(x) class(x))
+sapply(histdata, function(x) sum(is.na(x)))
+
+histdata2 <- histdata
+
+histdata2$ReleaseNumber <- NULL
+histdata2$New_Release_Flag <- NULL
+histdata2$File_Type <- NULL
+histdata2$ReleaseYear <- NULL
+histdata2$SoldCount <- NULL
+
+
+histda1 <- dummies::dummy.data.frame(histdata2)
+histda1$SoldFlag <- as.factor(histda1$SoldFlag)
+set.seed(121)
+dmean <- sapply(histda1[,-c(1,2)],mean)
+dsd <- sapply(histda1[ , -c(1,2)],sd )
+
+ndata <-  sweep(sweep(histda1[ ,-c(1,2)],2L,dmean),2,dsd,"/") 
+ndata$SKU_number <- histda1$SKU_number
+ndata$SoldFlag <- histda1$SoldFlag
+
+matdata <- data.matrix(ndata)
+y <- subset(matdata, select = SoldFlag) 
+x <- subset(matdata , select = -c(SoldFlag,SKU_number))
+set.seed(121)
+lasso <- glmnet::cv.glmnet(x,y,alpha = 1,family = "binomial",nfolds = 5)
+
+histda1$Pred <- as.numeric(predict(lasso,x,type = "class"))
+# fit_sell <- randomForest(SoldFlag~. , data = histda1[ , -1], importance= TRUE) 
+# fit_sell
+# plot(fit_sell)
+table(histda1$SoldFlag,histda1$Pred)
+
+#### Prediction of active data #####
+
+#activedata
+head(activedata,2)
+### work on flag 
+
+sapply(activedata, function(x) class(x))
+sapply(activedata, function(x) sum(is.na(x)))
+
+activedata2 <- activedata
+
+activedata2$ReleaseNumber <- NULL
+activedata2$New_Release_Flag <- NULL
+activedata2$File_Type <- NULL
+activedata2$ReleaseYear <- NULL
+activedata2$SoldCount <- NULL
+activedata2$SoldFlag <- NULL
+activedata1 <- dummies::dummy.data.frame(activedata2)
+set.seed(191)
+pmean <- sapply(activedata1[,-c(1)],mean)
+psd <- sapply(activedata1[ , -c(1)],sd )
+
+pdata <-  sweep(sweep(activedata1[ ,-c(1)],2L,pmean),2,psd,"/") 
+
+pmatdata <- data.matrix(pdata)
+
+activedata$Probability <- as.numeric(predict(lasso,pmatdata,type = "response" ))
+activedata$Predicted_SoldFlag1 <- as.numeric(predict(lasso,pmatdata , type = "class"))
+
+activedata$Predicted_SoldFlag <- ifelse(activedata$Predicted_SoldFlag1 == 1 ,
+                                        "Loss",ifelse(activedata$Predicted_SoldFlag1== 2,"Win",""))
+rownames(activedata) <- NULL
+activedata$Predicted_SoldFlag1 <- NULL
+############# working on predicion of count ########
+# Training data
+
+countdata <- subset(histdata,histdata$SoldFlag == 1)
+range(countdata$SoldCount)
+countdata$File_Type <- NULL
+
+countdata1 <- countdata
+
+countdata1$ReleaseNumber <- NULL
+countdata1$New_Release_Flag <- NULL
+countdata1$ReleaseYear <- NULL
+countdata1$SoldFlag <- NULL
+countdata1$SKU_number <- NULL
+
+sapply(countdata1,class)
+
+traindata <- dummies::dummy.data.frame(countdata1)
+
+fit_lm <- lm(SoldCount~. , data = traindata)
+summary(fit_lm)
+
+countdata$Predicted_count <- round(predict(fit_lm,traindata),0)
+
+#### on won data
+
+head(activedata,2)
+
+prcount <- subset(activedata,activedata$Predicted_SoldFlag == 2)
+
+prcount$Probability <- NULL
+prcount$Predicted_SoldFlag <- NULL
+prcount$File_Type <- NULL
+head(prcount,2)
+
+prcount2 <- prcount
+
+prcount2$ReleaseNumber <- NULL
+prcount2$New_Release_Flag <- NULL
+prcount2$ReleaseYear <- NULL
+prcount2$SoldFlag <- NULL
+prcount2$SKU_number <- NULL
+
+sapply(prcount2,class)
+rownames(prcount2) <- NULL
+prcount2$SoldCount <- NULL
+
+head(prcount2,2)
+sapply(prcount2,class)
+
+preddata <- dummies::dummy.data.frame(prcount2)
+head(preddata,2)
+
+prcount$Predicted_SoldCount <- round(predict(fit_lm,preddata),0)
+
+prcount$Predicted_SoldCount <- ifelse(prcount$Predicted_SoldCount < 0 , 1 , prcount$Predicted_SoldCount)
+
