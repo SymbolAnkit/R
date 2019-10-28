@@ -88,6 +88,8 @@ activedata$Predicted_SoldFlag <- ifelse(activedata$Predicted_SoldFlag1 == 1 ,
                                         "Loss",ifelse(activedata$Predicted_SoldFlag1== 2,"Win",""))
 rownames(activedata) <- NULL
 activedata$Predicted_SoldFlag1 <- NULL
+
+write.csv(activedata,"sell_prediction.csv",rownames = F)
 ############# working on predicion of count ########
 # Training data
 
@@ -145,3 +147,4 @@ prcount$Predicted_SoldCount <- round(predict(fit_lm,preddata),0)
 
 prcount$Predicted_SoldCount <- ifelse(prcount$Predicted_SoldCount < 0 , 1 , prcount$Predicted_SoldCount)
 
+write.csv(prcount,"Count_Prediction.csv",rownames = F)
