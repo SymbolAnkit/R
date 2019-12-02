@@ -1,4 +1,4 @@
-setwd("C:\\Users\\850039370\\Desktop\\New folder\\Retail")
+setwd("C:\\\\Desktop\\New folder\\Retail")
 library(dummies)
 rwdata <- read.csv("SalesKaggle3.csv", header = T)
 str(rwdata)
