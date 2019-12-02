@@ -1,0 +1,87 @@
+library(recommenderlab)
+library(ggplot2)
+library(data.table)
+library(reshape2)
+library(stringr)
+head(movies)
+head(ratings)
+
+movie_genre <- as.data.frame(movies$genres,stringsAsFactors = FALSE)
+movie_genre2 <- as.data.frame(tstrsplit(movie_genre[,1],'[|]'))
+colnames(movie_genre2) <- c(1:10)
+
+list_genre <- c("Action", "Adventure", "Animation", "Children", 
+                "Comedy", "Crime","Documentary", "Drama", "Fantasy",
+                "Film-Noir", "Horror", "Musical", "Mystery","Romance",
+                "Sci-Fi", "Thriller", "War", "Western")
+
+genre_mat1 <- matrix(0,10330,18)
+genre_mat1[1,] <- list_genre
+colnames(genre_mat1) <- list_genre
+
+
+for (index in 1:nrow(movie_genre2)) {
+  for (col in 1:ncol(movie_genre2)) {
+    gen_col = which(genre_mat1[1,] == movie_genre2[index,col])
+    genre_mat1[index+1,gen_col] <- 1
+  }
+}
+
+genre_mat2 <- as.data.frame(genre_mat1[-1,], stringsAsFactors=FALSE)
+
+for (col in 1:ncol(genre_mat2)) {
+  genre_mat2[,col] <- as.integer(genre_mat2[,col]) #convert from characters to integers
+} 
+
+SearchMatrix <- cbind(movies[,1:2], genre_mat2[])
+head(SearchMatrix)
+
+# Ratings
+
+ratings1 <- dcast(ratings, userId~movieId, value.var = "rating", na.rm=FALSE)
+ratingMatrixx <- as.matrix(ratings1[,-1])
+
+ratingMatrix <- as(ratingMatrixx, "realRatingMatrix")
+ratingMatrix
+
+
+recommendation_model <- recommenderRegistry$get_entries(dataType = "realRatingMatrix")
+names(recommendation_model)
+
+lapply(recommendation_model, "[[", "description")
+
+recommendation_model$IBCF_realRatingMatrix$parameters
+
+similarity_mat <- similarity(ratingMatrix[1:4, ],
+                             method = "cosine",
+                             which = "users")
+
+
+as.matrix(similarity_mat)
+image(as.matrix(similarity_mat), main = "User's Similarities")
+
+
+movie_similarity <- similarity(ratingMatrix[, 1:4], method =
+                                 "cosine", which = "items")
+as.matrix(movie_similarity)
+image(as.matrix(movie_similarity), main = "Movies similarity")
+
+rating_values <- as.vector(ratingMatrix@data)
+unique(rating_values)
+
+Table_of_Ratings <- table(rating_values) 
+Table_of_Ratings
+
+
+
+movie_views <- colCounts(ratingMatrix) # count views for each movie
+table_views <- data.frame(movie = names(movie_views),
+                          views = movie_views) # create dataframe of views
+table_views <- table_views[order(table_views$views,
+                                 decreasing = TRUE), ] # sort by number of views
+table_views$title <- NA
+for (index in 1:10325){
+  table_views[index,3] <- as.character(subset(movies,
+                                              movies$movieId == table_views[index,1])$title)
+}
+table_views[1:6,]
